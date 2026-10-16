@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 1440
     llm_model: str = "openai/gpt-oss-120b"
+    chroma_path: str = "./chroma_db"
 
     model_config = SettingsConfigDict(env_file=".env")
 
