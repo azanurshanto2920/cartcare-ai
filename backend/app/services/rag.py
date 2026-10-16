@@ -39,8 +39,13 @@ def index_chunks(chunks: list[str]) -> int:
     return len(chunks)
 
 
+MAX_DISTANCE = 1.0  # lower means a closer match; chunks farther than this are ignored
+
+
 def search_context(query: str, n_results: int = 2) -> str:
     results = collection.query(query_texts=[query], n_results=n_results)
-    if results["documents"] and results["documents"][0]:
-        return "\n\n".join(results["documents"][0])
-    return ""
+    documents = results["documents"][0] if results["documents"] else []
+    distances = results["distances"][0] if results["distances"] else []
+
+    relevant = [doc for doc, dist in zip(documents, distances) if dist <= MAX_DISTANCE]
+    return "\n\n".join(relevant)

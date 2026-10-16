@@ -9,7 +9,8 @@ from app.api.deps import get_current_user
 from app.db.database import get_db
 from app.db.models import Message, User
 from app.schemas.chat import ChatRequest, ChatResponse, MessageResponse
-from app.services.llm import build_user_turn, generate_reply
+from app.services.agent import generate_reply_with_tools
+from app.services.llm import build_user_turn
 from app.services.rag import chunk_text, extract_pdf_text, index_chunks, search_context
 
 router = APIRouter(tags=["chat"])
@@ -64,7 +65,7 @@ def chat(
     user_turn = build_user_turn(request.message, doc_context)
 
     try:
-        ai_reply = generate_reply(history, user_turn)
+        ai_reply = generate_reply_with_tools(db, history, user_turn)
     except Exception as e:
         print(f"LLM error: {e}")
         return ChatResponse(reply="Sorry, there was a problem generating a response. Please try again.")
