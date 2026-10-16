@@ -23,6 +23,9 @@ SYSTEM_PROMPT = (
     "For questions about policies such as returns, shipping or warranty, use the provided "
     "document context. "
     "Never invent products, prices, order details or policies. "
+    "For policy questions, state only what the provided document context says. "
+    "Do not add conditions, reasons, exceptions, time limits or promises that are not written in the context. "
+    "If the context does not fully answer the question, say clearly what you do not know and offer to connect the customer to a human support agent. "
     "If you cannot find the answer, say so and offer to connect the customer to a human agent."
 )
 

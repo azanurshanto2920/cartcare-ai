@@ -2,7 +2,7 @@ import os
 import shutil
 import tempfile
 
-from fastapi import APIRouter, Depends, File, UploadFile
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user
@@ -19,18 +19,24 @@ HISTORY_LIMIT = 10
 
 
 @router.post("/upload")
-def upload_pdf(
+def upload_document(
     file: UploadFile = File(...),
     current_user: User = Depends(get_current_user),
 ):
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
-        shutil.copyfileobj(file.file, tmp)
-        temp_path = tmp.name
+    filename = (file.filename or "").lower()
 
-    try:
-        text = extract_pdf_text(temp_path)
-    finally:
-        os.remove(temp_path)
+    if filename.endswith(".txt"):
+        text = file.file.read().decode("utf-8", errors="ignore")
+    elif filename.endswith(".pdf"):
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+            shutil.copyfileobj(file.file, tmp)
+            temp_path = tmp.name
+        try:
+            text = extract_pdf_text(temp_path)
+        finally:
+            os.remove(temp_path)
+    else:
+        raise HTTPException(status_code=400, detail="Only .pdf and .txt files are supported")
 
     chunks = chunk_text(text)
     count = index_chunks(chunks)
