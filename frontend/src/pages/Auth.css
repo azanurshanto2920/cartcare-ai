@@ -1,0 +1,104 @@
+.auth-page {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+}
+
+/* The login card is styled like the rating plate on an appliance */
+.plate {
+  width: 100%;
+  max-width: 420px;
+  background: var(--paper);
+  border: 1px solid var(--steel-dark);
+  border-radius: var(--radius-sm);
+}
+
+.plate-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--steel-dark);
+}
+
+.brand {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--amber);
+}
+
+.plate-intro {
+  padding: 16px 20px;
+  color: var(--ink-soft);
+  border-bottom: 1px solid var(--steel);
+}
+
+.plate-row {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--steel);
+}
+
+.plate-row label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+
+.plate-row .input {
+  border-color: var(--steel);
+}
+
+.plate-actions {
+  display: grid;
+  gap: 12px;
+  padding: 20px;
+}
+
+.plate-actions .error-text {
+  margin: 0;
+}
+
+.plate-foot {
+  padding: 14px 20px;
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+  border-top: 1px solid var(--steel);
+}
+
+.link-button {
+  padding: 0;
+  font: inherit;
+  color: var(--teal);
+  background: none;
+  border: none;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+@media (max-width: 420px) {
+  .plate-row {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}
