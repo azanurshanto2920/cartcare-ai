@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api import auth, chat
+from app.api import admin, auth, chat
 from app.db import models  # noqa: F401  (registers the tables)
 from app.db.database import Base, engine
 
@@ -18,6 +18,7 @@ app.add_middleware(
 
 app.include_router(auth.router)
 app.include_router(chat.router)
+app.include_router(admin.router)
 
 
 @app.get("/health")

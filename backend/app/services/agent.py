@@ -6,6 +6,7 @@ from app.core.config import settings
 from app.services.llm import client
 from app.services.orders import get_order_status
 from app.services.shop import search_products
+from app.services.tickets import create_ticket
 
 MAX_TOOL_ROUNDS = 4
 
@@ -13,20 +14,25 @@ SYSTEM_PROMPT = (
     "You are a friendly customer support assistant for an online electronics store "
     "that sells TVs, refrigerators and air conditioners. Prices are in BDT (taka). "
     "Reply briefly and clearly in the same language as the customer. "
-    "Write in plain text only. Do not use markdown, tables, bold or headings. "
     "If the customer writes in Bangla, including Bangla typed in English letters, reply in Bangla script. "
-    "When listing products, use one line per product: the product name, then the price in taka, then whether it is in stock. Write the words around the product names in the customer's language. "
+    "Write in plain text only. Do not use markdown, tables, bold or headings. "
     "Use the search_products tool for any question about products, prices, brands or stock. "
-    "When reporting an order, always include the order status, the product names with quantities, the tracking number if there is one, and the total price in taka. "
+    "When listing products, use one line per product: the product name, then the price in taka, "
+    "then whether it is in stock. Write the words around the product names in the customer's language. "
     "Use the get_order_status tool only when the customer has given BOTH an order number "
     "and the email used for the order; otherwise ask for the missing detail. "
+    "When reporting an order, always include the order status, the product names with quantities, "
+    "the tracking number if there is one, and the total price in taka. "
     "For questions about policies such as returns, shipping or warranty, use the provided "
-    "document context. "
+    "document context. State only what the context says. "
     "Never invent products, prices, order details or policies. "
-    "For policy questions, state only what the provided document context says. "
     "Do not add conditions, reasons, exceptions, time limits or promises that are not written in the context. "
-    "If the context does not fully answer the question, say clearly what you do not know and offer to connect the customer to a human support agent. "
-    "If you cannot find the answer, say so and offer to connect the customer to a human agent."
+    "Call the request_human_handoff tool when the customer asks for a human agent, "
+    "when the customer reports a damaged or faulty product or a complaint, "
+    "or when you cannot answer from the tools or the context. "
+    "Give a short English reason that summarises the problem, then tell the customer "
+    "that a human support agent will contact them. "
+    "Do not call it for questions you can answer yourself."
 )
 
 TOOLS = [
@@ -63,22 +69,47 @@ TOOLS = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "request_human_handoff",
+            "description": (
+                "Create a support ticket so a human agent contacts the customer. "
+                "Use when the customer asks for a human, reports a complaint or damaged product, "
+                "or when the question cannot be answered."
+            ),
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "reason": {
+                        "type": "string",
+                        "description": "A short English summary of the customer's problem",
+                    },
+                },
+                "required": ["reason"],
+            },
+        },
+    },
 ]
 
 
-def run_tool(db: Session, name: str, arguments: dict) -> dict:
+def run_tool(db: Session, user_id: int, name: str, arguments: dict) -> dict:
     try:
         if name == "search_products":
             return {"products": search_products(db, **arguments)}
         if name == "get_order_status":
             return get_order_status(db, **arguments)
+        if name == "request_human_handoff":
+            return create_ticket(db, user_id, **arguments)
         return {"error": f"Unknown tool: {name}"}
     except Exception as e:
         print(f"Tool error in {name}: {e}")
         return {"error": "The tool failed. Please try again."}
 
 
-def generate_reply_with_tools(db: Session, history: list[dict], user_turn: str) -> str:
+def generate_reply_with_tools(
+    db: Session, user_id: int, history: list[dict], user_turn: str
+) -> str:
     messages = (
         [{"role": "system", "content": SYSTEM_PROMPT}]
         + history
@@ -125,7 +156,7 @@ def generate_reply_with_tools(db: Session, history: list[dict], user_turn: str) 
                 arguments = json.loads(call.function.arguments or "{}")
             except json.JSONDecodeError:
                 arguments = {}
-            result = run_tool(db, call.function.name, arguments)
+            result = run_tool(db, user_id, call.function.name, arguments)
             messages.append(
                 {
                     "role": "tool",

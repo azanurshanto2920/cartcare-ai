@@ -54,12 +54,16 @@ def chat(
     recent = (
         db.query(Message)
         .filter(Message.user_id == current_user.id)
-        .order_by(Message.timestamp.desc())
+        .order_by(Message.id.desc())
         .limit(HISTORY_LIMIT)
         .all()
     )
     recent.reverse()
     history = [{"role": m.role, "content": m.content} for m in recent]
+    
+    # Store the user's message now (not committed yet) so a handoff ticket can include it
+    db.add(Message(user_id=current_user.id, role="user", content=request.message))
+    db.flush()
 
     # Search the knowledge base; continue without context if it fails
     try:
@@ -71,13 +75,12 @@ def chat(
     user_turn = build_user_turn(request.message, doc_context)
 
     try:
-        ai_reply = generate_reply_with_tools(db, history, user_turn)
+        ai_reply = generate_reply_with_tools(db, current_user.id, history, user_turn)
     except Exception as e:
         print(f"LLM error: {e}")
         return ChatResponse(reply="Sorry, there was a problem generating a response. Please try again.")
 
-    # Save both messages only after a successful reply
-    db.add(Message(user_id=current_user.id, role="user", content=request.message))
+    # Save the assistant's reply; the user's message is already added above
     db.add(Message(user_id=current_user.id, role="assistant", content=ai_reply))
     db.commit()
 
@@ -92,6 +95,6 @@ def get_history(
     return (
         db.query(Message)
         .filter(Message.user_id == current_user.id)
-        .order_by(Message.timestamp.desc())
+        .order_by(Message.id.desc())
         .all()
     )
