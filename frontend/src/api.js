@@ -76,6 +76,10 @@ export async function register(username, password) {
   if (data.error) throw new ApiError(data.error, 400);
 }
 
+export function getMe() {
+  return request("/me");
+}
+
 export function sendMessage(message) {
   return request("/chat", { method: "POST", body: { message } });
 }

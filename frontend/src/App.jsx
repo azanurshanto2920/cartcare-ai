@@ -1,32 +1,12 @@
-import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 
-import { clearToken, getToken } from "./api.js";
+import { getToken } from "./api.js";
+import Admin from "./pages/Admin.jsx";
 import Auth from "./pages/Auth.jsx";
+import Chat from "./pages/Chat.jsx";
 
 function RequireAuth({ children }) {
   return getToken() ? children : <Navigate to="/login" replace />;
-}
-
-// Temporary page, replaced by the real chat page in a later step
-function Home() {
-  const navigate = useNavigate();
-
-  function signOut() {
-    clearToken();
-    navigate("/login");
-  }
-
-  return (
-    <main className="auth-page">
-      <div style={{ display: "grid", gap: 12, justifyItems: "start" }}>
-        <h1>You are signed in</h1>
-        <p>The chat page comes next.</p>
-        <button type="button" className="btn btn-quiet" onClick={signOut}>
-          Sign out
-        </button>
-      </div>
-    </main>
-  );
 }
 
 export default function App() {
@@ -37,7 +17,15 @@ export default function App() {
         path="/"
         element={
           <RequireAuth>
-            <Home />
+            <Chat />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <RequireAuth>
+            <Admin />
           </RequireAuth>
         }
       />

@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from app.api.deps import get_current_user
+
 from app.core.security import create_access_token, hash_password, verify_password
 from app.db.database import get_db
 from app.db.models import User
@@ -34,3 +36,9 @@ def login(request: LoginRequest, db: Session = Depends(get_db)):
 
     token = create_access_token({"sub": user.username})
     return {"access_token": token, "token_type": "bearer"}
+
+
+
+@router.get("/me")
+def me(current_user: User = Depends(get_current_user)):
+    return {"username": current_user.username, "is_admin": bool(current_user.is_admin)}
