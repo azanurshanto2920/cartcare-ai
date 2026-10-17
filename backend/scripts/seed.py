@@ -1,30 +1,30 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from app.db.database import SessionLocal
 from app.db.models import Customer, Order, OrderItem, Product
 
 PRODUCTS = [
-    # name, category, brand, price (BDT), stock, description
-    ("Samsung 43 inch Full HD Smart TV", "TV", "Samsung", 48500, 12, "43 inch Full HD LED smart TV with built-in Wi-Fi and streaming apps. 1 year warranty."),
-    ("Sony Bravia 55 inch 4K Google TV", "TV", "Sony", 112000, 6, "55 inch 4K UHD Google TV with HDR and Dolby Audio. 2 years warranty."),
-    ("Walton 32 inch HD LED TV", "TV", "Walton", 19500, 20, "32 inch HD LED TV with HDMI and USB ports. 1 year warranty."),
-    ("LG 65 inch 4K OLED TV", "TV", "LG", 245000, 3, "65 inch 4K OLED TV with perfect blacks and webOS. 2 years warranty."),
-    ("Walton 250L Double Door Refrigerator", "Refrigerator", "Walton", 36500, 10, "250 litre frost-free double door refrigerator with inverter compressor. 5 years compressor warranty."),
-    ("Samsung 320L Double Door Refrigerator", "Refrigerator", "Samsung", 62000, 5, "320 litre frost-free refrigerator with digital inverter and 10 years compressor warranty."),
-    ("LG 190L Single Door Refrigerator", "Refrigerator", "LG", 27500, 14, "190 litre direct-cool single door refrigerator, energy efficient. 1 year warranty."),
-    ("Hisense 500L Side by Side Refrigerator", "Refrigerator", "Hisense", 118000, 2, "500 litre side by side refrigerator with water dispenser. 2 years warranty."),
-    ("Gree 1 Ton Split AC", "AC", "Gree", 41500, 9, "1 ton split air conditioner, non-inverter. 1 year warranty, 5 years compressor warranty."),
-    ("Carrier 1.5 Ton Inverter AC", "AC", "Carrier", 69500, 7, "1.5 ton inverter split AC, saves up to 50 percent electricity. 3 years warranty."),
-    ("Midea 2 Ton Inverter AC", "AC", "Midea", 88000, 4, "2 ton inverter split AC with fast cooling and auto clean. 3 years warranty."),
-    ("General 1.5 Ton Split AC", "AC", "General", 79500, 0, "1.5 ton split AC with turbo cooling. Currently out of stock."),
+    # name, category, brand, price (USD), stock, description
+    ("Samsung 43 inch Full HD Smart TV", "TV", "Samsung", 429, 12, "43 inch Full HD LED smart TV with built-in Wi-Fi and streaming apps. 1 year warranty."),
+    ("Sony Bravia 55 inch 4K Google TV", "TV", "Sony", 999, 6, "55 inch 4K UHD Google TV with HDR and Dolby Audio. 2 years warranty."),
+    ("TCL 32 inch HD LED TV", "TV", "TCL", 169, 20, "32 inch HD LED TV with HDMI and USB ports. 1 year warranty."),
+    ("LG 65 inch 4K OLED TV", "TV", "LG", 2199, 3, "65 inch 4K OLED TV with perfect blacks and webOS. 2 years warranty."),
+    ("Whirlpool 250L Double Door Refrigerator", "Refrigerator", "Whirlpool", 479, 10, "250 litre frost-free double door refrigerator with inverter compressor. 5 years compressor warranty."),
+    ("Samsung 320L Double Door Refrigerator", "Refrigerator", "Samsung", 749, 5, "320 litre frost-free refrigerator with digital inverter and 10 years compressor warranty."),
+    ("LG 190L Single Door Refrigerator", "Refrigerator", "LG", 329, 14, "190 litre direct-cool single door refrigerator, energy efficient. 1 year warranty."),
+    ("Hisense 500L Side by Side Refrigerator", "Refrigerator", "Hisense", 1399, 2, "500 litre side by side refrigerator with water dispenser. 2 years warranty."),
+    ("Gree 1 Ton Split AC", "AC", "Gree", 449, 9, "1 ton split air conditioner, non-inverter. 1 year warranty, 5 years compressor warranty."),
+    ("Carrier 1.5 Ton Inverter AC", "AC", "Carrier", 749, 7, "1.5 ton inverter split AC, saves up to 50 percent electricity. 3 years warranty."),
+    ("Midea 2 Ton Inverter AC", "AC", "Midea", 949, 4, "2 ton inverter split AC with fast cooling and auto clean. 3 years warranty."),
+    ("General 1.5 Ton Split AC", "AC", "General", 829, 0, "1.5 ton split AC with turbo cooling. Currently out of stock."),
 ]
 
 CUSTOMERS = [
-    ("Rahim Uddin", "rahim@example.com", "01711000001"),
-    ("Karima Begum", "karima@example.com", "01711000002"),
-    ("Tanvir Ahmed", "tanvir@example.com", "01711000003"),
-    ("Nusrat Jahan", "nusrat@example.com", "01711000004"),
-    ("Sajib Hossain", "sajib@example.com", "01711000005"),
+    ("Daniel Carter", "daniel.carter@example.com", "+1-555-0101"),
+    ("Emily Brooks", "emily.brooks@example.com", "+1-555-0102"),
+    ("Michael Reyes", "michael.reyes@example.com", "+1-555-0103"),
+    ("Sophie Turner", "sophie.turner@example.com", "+1-555-0104"),
+    ("Omar Haddad", "omar.haddad@example.com", "+1-555-0105"),
 ]
 
 # customer index, status, tracking number, days ago, [(product index, quantity)]
@@ -36,6 +36,10 @@ ORDERS = [
     (3, "cancelled", None, 9, [(1, 1)]),
     (4, "shipped", "TRK1004", 2, [(6, 1)]),
 ]
+
+
+def utc_now() -> datetime:
+    return datetime.now(timezone.utc).replace(tzinfo=None)
 
 
 def seed() -> None:
@@ -73,7 +77,7 @@ def seed() -> None:
                 status=status,
                 total=total,
                 tracking_number=tracking,
-                created_at=datetime.utcnow() - timedelta(days=days_ago),
+                created_at=utc_now() - timedelta(days=days_ago),
             )
             db.add(order)
             db.flush()

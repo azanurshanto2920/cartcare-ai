@@ -10,19 +10,32 @@ from app.services.tickets import create_ticket
 
 MAX_TOOL_ROUNDS = 4
 
+
+
+def remove_duplicate_reply(text: str) -> str:
+    # The model sometimes writes the same reply twice in a row; keep one copy
+    text = text.strip()
+    for separator in ("", " ", "\n", "\n\n"):
+        size = len(text) - len(separator)
+        if size > 0 and size % 2 == 0:
+            first = text[: size // 2]
+            if text == first + separator + first:
+                return first
+    return text
+
 SYSTEM_PROMPT = (
     "You are a friendly customer support assistant for an online electronics store "
-    "that sells TVs, refrigerators and air conditioners. Prices are in BDT (taka). "
-    "Reply briefly and clearly in the same language as the customer. "
-    "If the customer writes in Bangla, including Bangla typed in English letters, reply in Bangla script. "
+    "that sells TVs, refrigerators and air conditioners. Prices are in US dollars (USD). "
+    "Reply briefly and clearly. Reply in English by default, and in the customer's own language "
+    "if they write in another language. "
     "Write in plain text only. Do not use markdown, tables, bold or headings. "
     "Use the search_products tool for any question about products, prices, brands or stock. "
-    "When listing products, use one line per product: the product name, then the price in taka, "
-    "then whether it is in stock. Write the words around the product names in the customer's language. "
+    "When listing products, use one line per product: the product name, then the price in dollars, "
+    "then whether it is in stock. "
     "Use the get_order_status tool only when the customer has given BOTH an order number "
     "and the email used for the order; otherwise ask for the missing detail. "
     "When reporting an order, always include the order status, the product names with quantities, "
-    "the tracking number if there is one, and the total price in taka. "
+    "the tracking number if there is one, and the total price in dollars. "
     "For questions about policies such as returns, shipping or warranty, use the provided "
     "document context. State only what the context says. "
     "Never invent products, prices, order details or policies. "
@@ -47,8 +60,8 @@ TOOLS = [
                     "query": {"type": "string", "description": "Free-text keywords, e.g. 'inverter' or 'smart'"},
                     "category": {"type": "string", "enum": ["TV", "Refrigerator", "AC"]},
                     "brand": {"type": "string"},
-                    "min_price": {"type": "number", "description": "Minimum price in BDT"},
-                    "max_price": {"type": "number", "description": "Maximum price in BDT"},
+                    "min_price": {"type": "number", "description": "Minimum price in USD"},
+                    "max_price": {"type": "number", "description": "Maximum price in USD"},
                     "in_stock_only": {"type": "boolean"},
                 },
             },
@@ -129,7 +142,7 @@ def generate_reply_with_tools(
 
         # No tool requested: this is the final answer
         if not message.tool_calls:
-            return message.content or ""
+            return remove_duplicate_reply(message.content or "")
 
         # Keep the assistant's tool request in the conversation
         messages.append(
