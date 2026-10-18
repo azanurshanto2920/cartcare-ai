@@ -1,0 +1,135 @@
+.invoices {
+  background: var(--paper);
+  border: 1px solid var(--steel-dark);
+  border-radius: var(--radius-sm);
+}
+
+.invoice {
+  border-bottom: 1px solid var(--steel);
+}
+
+.invoice:last-child {
+  border-bottom: none;
+}
+
+.invoice-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 16px;
+}
+
+.invoice-main {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.invoice-title {
+  font-weight: 500;
+}
+
+.invoice-meta {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+.invoice-total {
+  min-width: 96px;
+  text-align: right;
+  font-weight: 500;
+}
+
+/* Review state: amber means "needs a person to look at it" */
+.review-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 120px;
+  font-size: 0.875rem;
+}
+
+.review-state .status-dot {
+  background: var(--steel-dark);
+}
+
+.review-state.needs-review .status-dot {
+  background: var(--amber);
+}
+
+/* Detail panel */
+.invoice-detail {
+  display: grid;
+  gap: 16px;
+  padding: 0 16px 20px;
+}
+
+.warning-box {
+  padding: 10px 14px;
+  background: var(--enamel);
+  border: 1px solid var(--steel-dark);
+  border-left: 3px solid var(--amber);
+  border-radius: var(--radius-sm);
+}
+
+.warning-box p {
+  font-size: 0.9375rem;
+}
+
+.warning-box p + p {
+  margin-top: 6px;
+}
+
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+.items-table th,
+.items-table td {
+  padding: 8px 10px;
+  text-align: right;
+  border-bottom: 1px solid var(--steel);
+}
+
+.items-table th:first-child,
+.items-table td:first-child {
+  text-align: left;
+}
+
+.items-table th {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+  border-bottom-color: var(--steel-dark);
+}
+
+.items-table tfoot td {
+  border-bottom: none;
+}
+
+.items-table tfoot .grand td {
+  font-weight: 600;
+  border-top: 1px solid var(--steel-dark);
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+@media (max-width: 640px) {
+  .invoice-row {
+    grid-template-columns: 1fr auto;
+  }
+
+  .invoice-total {
+    text-align: left;
+  }
+
+  .review-state {
+    min-width: 0;
+  }
+}

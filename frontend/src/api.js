@@ -110,3 +110,18 @@ export function getTickets(status) {
 export function updateTicket(id, status) {
   return request(`/admin/tickets/${id}`, { method: "PATCH", body: { status } });
 }
+
+
+export function getInvoices() {
+  return request("/admin/invoices");
+}
+
+export function getInvoice(id) {
+  return request(`/admin/invoices/${id}`);
+}
+
+export function uploadInvoice(file) {
+  const form = new FormData();
+  form.append("file", file);
+  return request("/admin/invoices", { method: "POST", body: form, isForm: true });
+}

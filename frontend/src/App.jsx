@@ -4,6 +4,7 @@ import { getToken } from "./api.js";
 import Admin from "./pages/Admin.jsx";
 import Auth from "./pages/Auth.jsx";
 import Chat from "./pages/Chat.jsx";
+import Invoices from "./pages/Invoices.jsx";
 import Knowledge from "./pages/Knowledge.jsx";
 
 function RequireAuth({ children }) {
@@ -35,6 +36,14 @@ export default function App() {
         element={
           <RequireAuth>
             <Knowledge />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/admin/invoices"
+        element={
+          <RequireAuth>
+            <Invoices />
           </RequireAuth>
         }
       />

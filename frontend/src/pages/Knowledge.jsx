@@ -103,6 +103,9 @@ export default function Knowledge() {
           <Link to="/" className="btn btn-quiet">
             Back to chat
           </Link>
+          <Link to="/admin/invoices" className="btn btn-quiet btn-small">
+            Invoices
+          </Link>
         </div>
       </main>
     );
