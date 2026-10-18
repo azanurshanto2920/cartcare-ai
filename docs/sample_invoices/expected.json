@@ -1,0 +1,62 @@
+[
+  {
+    "file": "invoice_northwind.pdf",
+    "invoice_number": "INV-2026-0412",
+    "invoice_date": "2026-09-14",
+    "vendor": "Northwind Appliances Ltd",
+    "subtotal": 1187.0,
+    "total": 1281.96,
+    "items": [
+      {
+        "description": "Samsung 43 inch Full HD Smart TV",
+        "quantity": 2,
+        "unit_price": 429.0
+      },
+      {
+        "description": "LG 190L Single Door Refrigerator",
+        "quantity": 1,
+        "unit_price": 329.0
+      }
+    ]
+  },
+  {
+    "file": "invoice_brighthome.pdf",
+    "invoice_number": "BH-88213",
+    "invoice_date": "2026-10-03",
+    "vendor": "BrightHome Supply Co.",
+    "subtotal": 2382.0,
+    "total": 2287.9,
+    "items": [
+      {
+        "description": "Carrier 1.5 Ton Inverter AC",
+        "quantity": 3,
+        "unit_price": 749.0
+      },
+      {
+        "description": "AC installation service",
+        "quantity": 3,
+        "unit_price": 45.0
+      }
+    ]
+  },
+  {
+    "file": "invoice_metro_wholesale.pdf",
+    "invoice_number": "7731",
+    "invoice_date": "2026-10-12",
+    "vendor": "Metro Wholesale Traders",
+    "subtotal": 3297.0,
+    "total": 3461.85,
+    "items": [
+      {
+        "description": "Midea 2 Ton Inverter AC",
+        "quantity": 2,
+        "unit_price": 949.0
+      },
+      {
+        "description": "Hisense 500L Side by Side Refrigerator",
+        "quantity": 1,
+        "unit_price": 1399.0
+      }
+    ]
+  }
+]
