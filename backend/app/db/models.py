@@ -75,3 +75,20 @@ class Ticket(Base):
     conversation = Column(Text)
     status = Column(String, default="open", index=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+
+
+class InvoiceRecord(Base):
+    __tablename__ = "invoices"
+
+    id = Column(Integer, primary_key=True, index=True)
+    uploaded_by = Column(Integer, ForeignKey("users.id"), index=True)
+    filename = Column(String)
+    vendor = Column(String, nullable=True)
+    invoice_number = Column(String, nullable=True)
+    invoice_date = Column(String, nullable=True)
+    total = Column(Float, nullable=True)
+    needs_review = Column(Boolean, default=False)
+    warnings = Column(Text, default="[]")
+    data = Column(Text)
+    created_at = Column(DateTime, default=datetime.utcnow)
