@@ -13,7 +13,10 @@ const TABS = [
 function formatDate(value) {
   // The API sends UTC times without a timezone marker
   const date = new Date(value.endsWith("Z") ? value : `${value}Z`);
-  return date.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+  return date.toLocaleString(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
 }
 
 export default function Admin() {
@@ -38,7 +41,7 @@ export default function Admin() {
       }
       setError(err.message);
     },
-    [navigate]
+    [navigate],
   );
 
   // Check that the signed-in user is an admin
@@ -101,10 +104,17 @@ export default function Admin() {
           <h1>Support tickets</h1>
         </div>
         <div className="ticket-actions">
+          <Link to="/admin/knowledge" className="btn btn-quiet btn-small">
+            Knowledge base
+          </Link>
           <Link to="/" className="btn btn-quiet btn-small">
             Back to chat
           </Link>
-          <button type="button" className="btn btn-quiet btn-small" onClick={signOut}>
+          <button
+            type="button"
+            className="btn btn-quiet btn-small"
+            onClick={signOut}
+          >
             Sign out
           </button>
         </div>
@@ -137,7 +147,9 @@ export default function Admin() {
 
           {!loading && tickets.length === 0 && (
             <p className="admin-note">
-              {tab === "open" ? "No open tickets. New requests for a human agent will appear here." : "No tickets here."}
+              {tab === "open"
+                ? "No open tickets. New requests for a human agent will appear here."
+                : "No tickets here."}
             </p>
           )}
 
@@ -155,7 +167,9 @@ export default function Admin() {
                         User {ticket.user_id} · {formatDate(ticket.created_at)}
                       </span>
                     </div>
-                    <span className={`ticket-status ${isOpen ? "is-open" : ""}`}>
+                    <span
+                      className={`ticket-status ${isOpen ? "is-open" : ""}`}
+                    >
                       <span className="status-dot" aria-hidden="true" />
                       {isOpen ? "Open" : "Resolved"}
                     </span>
@@ -164,14 +178,18 @@ export default function Admin() {
                         type="button"
                         className="btn btn-quiet btn-small"
                         aria-expanded={isExpanded}
-                        onClick={() => setExpanded(isExpanded ? null : ticket.id)}
+                        onClick={() =>
+                          setExpanded(isExpanded ? null : ticket.id)
+                        }
                       >
                         {isExpanded ? "Hide chat" : "View chat"}
                       </button>
                       <button
                         type="button"
                         className={`btn btn-small ${isOpen ? "btn-primary" : "btn-quiet"}`}
-                        onClick={() => changeStatus(ticket, isOpen ? "resolved" : "open")}
+                        onClick={() =>
+                          changeStatus(ticket, isOpen ? "resolved" : "open")
+                        }
                       >
                         {isOpen ? "Mark resolved" : "Reopen"}
                       </button>

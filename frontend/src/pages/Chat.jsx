@@ -103,6 +103,9 @@ export default function Chat() {
             <Link to="/admin" className="side-link">
               Support tickets
             </Link>
+            <Link to="/admin/knowledge" className="side-link">
+              Knowledge base
+            </Link>
           </nav>
         )}
 

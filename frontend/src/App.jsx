@@ -4,6 +4,7 @@ import { getToken } from "./api.js";
 import Admin from "./pages/Admin.jsx";
 import Auth from "./pages/Auth.jsx";
 import Chat from "./pages/Chat.jsx";
+import Knowledge from "./pages/Knowledge.jsx";
 
 function RequireAuth({ children }) {
   return getToken() ? children : <Navigate to="/login" replace />;
@@ -26,6 +27,14 @@ export default function App() {
         element={
           <RequireAuth>
             <Admin />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/admin/knowledge"
+        element={
+          <RequireAuth>
+            <Knowledge />
           </RequireAuth>
         }
       />

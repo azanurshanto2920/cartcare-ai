@@ -88,10 +88,18 @@ export function getHistory() {
   return request("/history");
 }
 
+export function getDocuments() {
+  return request("/admin/documents");
+}
+
 export function uploadDocument(file) {
   const form = new FormData();
   form.append("file", file);
-  return request("/upload", { method: "POST", body: form, isForm: true });
+  return request("/admin/documents", { method: "POST", body: form, isForm: true });
+}
+
+export function deleteDocument(source) {
+  return request(`/admin/documents/${encodeURIComponent(source)}`, { method: "DELETE" });
 }
 
 export function getTickets(status) {
