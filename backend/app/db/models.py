@@ -92,3 +92,17 @@ class InvoiceRecord(Base):
     warnings = Column(Text, default="[]")
     data = Column(Text)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+
+
+class ChatLog(Base):
+    __tablename__ = "chat_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+    question = Column(Text)
+    answer = Column(Text)
+    tools = Column(String, default="")
+    duration_ms = Column(Integer, default=0)
+    failed = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)

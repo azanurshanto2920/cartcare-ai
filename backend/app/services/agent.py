@@ -121,7 +121,11 @@ def run_tool(db: Session, user_id: int, name: str, arguments: dict) -> dict:
 
 
 def generate_reply_with_tools(
-    db: Session, user_id: int, history: list[dict], user_turn: str
+    db: Session,
+    user_id: int,
+    history: list[dict],
+    user_turn: str,
+    tools_used: list[str] | None = None,
 ) -> str:
     messages = (
         [{"role": "system", "content": SYSTEM_PROMPT}]
@@ -169,6 +173,8 @@ def generate_reply_with_tools(
                 arguments = json.loads(call.function.arguments or "{}")
             except json.JSONDecodeError:
                 arguments = {}
+            if tools_used is not None:
+                tools_used.append(call.function.name)
             result = run_tool(db, user_id, call.function.name, arguments)
             messages.append(
                 {
