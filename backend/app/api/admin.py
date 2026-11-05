@@ -11,6 +11,7 @@ from app.db.models import InvoiceRecord, Ticket, User
 from app.schemas.invoice import ExtractedInvoice, InvoiceResult
 from app.schemas.ticket import TicketResponse, TicketStatusUpdate
 from app.services.invoices import check_invoice, extract_invoice
+from app.services.analytics import get_analytics
 from app.services.rag import (
     chunk_text,
     delete_document,
@@ -200,3 +201,12 @@ def get_invoice(
     if not record:
         raise HTTPException(status_code=404, detail="Invoice not found")
     return to_invoice_result(record)
+
+
+
+@router.get("/analytics")
+def analytics(
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_admin),
+):
+    return get_analytics(db)
