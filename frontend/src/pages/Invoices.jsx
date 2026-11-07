@@ -149,6 +149,9 @@ export default function Invoices() {
           <Link to="/admin/knowledge" className="btn btn-quiet btn-small">
             Knowledge base
           </Link>
+            <Link to="/admin/analytics" className="btn btn-quiet btn-small">
+            Analytics
+          </Link>
           <Link to="/" className="btn btn-quiet btn-small">
             Back to chat
           </Link>

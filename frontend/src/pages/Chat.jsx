@@ -109,6 +109,9 @@ export default function Chat() {
             <Link to="/admin/invoices" className="side-link">
               Invoices
             </Link>
+              <Link to="/admin/analytics" className="side-link">
+              Analytics
+            </Link>
           </nav>
         )}
 

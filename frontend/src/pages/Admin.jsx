@@ -110,6 +110,9 @@ export default function Admin() {
           <Link to="/admin/invoices" className="btn btn-quiet btn-small">
             Invoices
           </Link>
+            <Link to="/admin/analytics" className="btn btn-quiet btn-small">
+            Analytics
+          </Link>
           <Link to="/" className="btn btn-quiet btn-small">
             Back to chat
           </Link>

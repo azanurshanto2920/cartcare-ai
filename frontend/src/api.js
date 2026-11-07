@@ -88,6 +88,15 @@ export function getHistory() {
   return request("/history");
 }
 
+export function getTickets(status) {
+  const query = status ? `?status=${encodeURIComponent(status)}` : "";
+  return request(`/admin/tickets${query}`);
+}
+
+export function updateTicket(id, status) {
+  return request(`/admin/tickets/${id}`, { method: "PATCH", body: { status } });
+}
+
 export function getDocuments() {
   return request("/admin/documents");
 }
@@ -102,16 +111,6 @@ export function deleteDocument(source) {
   return request(`/admin/documents/${encodeURIComponent(source)}`, { method: "DELETE" });
 }
 
-export function getTickets(status) {
-  const query = status ? `?status=${encodeURIComponent(status)}` : "";
-  return request(`/admin/tickets${query}`);
-}
-
-export function updateTicket(id, status) {
-  return request(`/admin/tickets/${id}`, { method: "PATCH", body: { status } });
-}
-
-
 export function getInvoices() {
   return request("/admin/invoices");
 }
@@ -124,4 +123,8 @@ export function uploadInvoice(file) {
   const form = new FormData();
   form.append("file", file);
   return request("/admin/invoices", { method: "POST", body: form, isForm: true });
+}
+
+export function getAnalytics() {
+  return request("/admin/analytics");
 }

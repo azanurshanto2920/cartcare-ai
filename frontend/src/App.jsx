@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 
 import { getToken } from "./api.js";
 import Admin from "./pages/Admin.jsx";
+import Analytics from "./pages/Analytics.jsx";
 import Auth from "./pages/Auth.jsx";
 import Chat from "./pages/Chat.jsx";
 import Invoices from "./pages/Invoices.jsx";
@@ -44,6 +45,14 @@ export default function App() {
         element={
           <RequireAuth>
             <Invoices />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/admin/analytics"
+        element={
+          <RequireAuth>
+            <Analytics />
           </RequireAuth>
         }
       />
