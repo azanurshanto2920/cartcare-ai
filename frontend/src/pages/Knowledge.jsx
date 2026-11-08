@@ -103,9 +103,6 @@ export default function Knowledge() {
           <Link to="/" className="btn btn-quiet">
             Back to chat
           </Link>
-          <Link to="/admin/invoices" className="btn btn-quiet btn-small">
-            Invoices
-          </Link>
         </div>
       </main>
     );
@@ -121,6 +118,12 @@ export default function Knowledge() {
         <div className="ticket-actions">
           <Link to="/admin" className="btn btn-quiet btn-small">
             Tickets
+          </Link>
+          <Link to="/admin/invoices" className="btn btn-quiet btn-small">
+            Invoices
+          </Link>
+          <Link to="/admin/analytics" className="btn btn-quiet btn-small">
+            Analytics
           </Link>
           <Link to="/" className="btn btn-quiet btn-small">
             Back to chat
@@ -149,7 +152,9 @@ export default function Knowledge() {
           <button type="submit" className="btn btn-primary" disabled={!file || uploading}>
             {uploading ? "Uploading…" : "Upload"}
           </button>
-          <p className="upload-note">PDF or plain text, up to 10 MB. Scanned PDFs without selectable text are not supported.</p>
+          <p className="upload-note">
+            PDF or plain text, up to 10 MB. Scanned PDFs without selectable text are not supported.
+          </p>
         </form>
 
         {notice && (
