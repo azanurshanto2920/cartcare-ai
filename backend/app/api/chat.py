@@ -7,7 +7,7 @@ from app.api.deps import get_current_user
 from app.db.database import get_db
 from app.db.models import ChatLog, Message, User
 from app.schemas.chat import ChatRequest, ChatResponse, MessageResponse
-from app.services.agent import generate_reply_with_tools
+from app.services.agent import generate_checked_reply
 from app.services.llm import build_user_turn
 from app.services.rag import search_context
 
@@ -77,7 +77,7 @@ def chat(
     user_turn = build_user_turn(request.message, doc_context)
 
     try:
-        ai_reply = generate_reply_with_tools(
+        ai_reply, ok = generate_checked_reply(
             db, current_user.id, history, user_turn, tools_used
         )
     except Exception as e:
@@ -86,6 +86,12 @@ def chat(
         fallback = "Sorry, there was a problem generating a response. Please try again."
         save_log(db, current_user.id, request.message, fallback, tools_used, started, True)
         return ChatResponse(reply=fallback)
+
+    if not ok:
+        # Never store a broken reply: it would be sent to the model with the next question
+        db.rollback()
+        save_log(db, current_user.id, request.message, ai_reply, tools_used, started, True)
+        return ChatResponse(reply=ai_reply)
 
     # Save the assistant's reply; the user's message is already added above
     db.add(Message(user_id=current_user.id, role="assistant", content=ai_reply))

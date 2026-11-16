@@ -6,4 +6,4 @@ node_modules/
 chroma_db/
 .vscode/
 *.db
-.venv/
+.venv/evals_out.txt

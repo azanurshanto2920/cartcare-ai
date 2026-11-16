@@ -11,7 +11,6 @@ from app.services.tickets import create_ticket
 MAX_TOOL_ROUNDS = 4
 
 
-
 def remove_duplicate_reply(text: str) -> str:
     # The model sometimes writes the same reply twice in a row; keep one copy
     text = text.strip()
@@ -22,6 +21,7 @@ def remove_duplicate_reply(text: str) -> str:
             if text == first + separator + first:
                 return first
     return text
+
 
 SYSTEM_PROMPT = (
     "You are a friendly customer support assistant for an online electronics store "
@@ -39,6 +39,8 @@ SYSTEM_PROMPT = (
     "For questions about policies such as returns, shipping or warranty, use the provided "
     "document context. State only what the context says. "
     "Never invent products, prices, order details or policies. "
+    "You only help with this store: its products, orders, policies and support. "
+    "If the customer asks about anything else, politely say that you can only help with questions about the store, and do not answer it. "
     "Do not add conditions, reasons, exceptions, time limits or promises that are not written in the context. "
     "Call the request_human_handoff tool when the customer asks for a human agent, "
     "when the customer reports a damaged or faulty product or a complaint, "
@@ -185,3 +187,46 @@ def generate_reply_with_tools(
             )
 
     return "Sorry, I could not complete that request. Please try again or ask for a human agent."
+
+
+BROKEN_MARKERS = (
+    "...",
+    "\u2026",
+    "sorry, i made",
+    "we need to correct",
+    "need to respond",
+    "messed up",
+)
+
+SAFE_FALLBACK = (
+    "Sorry, I could not prepare a reliable answer. "
+    "Please try again, or ask to speak with a human agent."
+)
+
+
+def looks_broken(reply: str) -> bool:
+    if not reply.strip():
+        return True
+    lowered = reply.lower()
+    if any(marker in lowered for marker in BROKEN_MARKERS):
+        return True
+    return len(reply) > 1500
+
+
+def generate_checked_reply(
+    db: Session,
+    user_id: int,
+    history: list[dict],
+    user_turn: str,
+    tools_used: list[str] | None = None,
+) -> tuple[str, bool]:
+    # Returns (reply, ok). One retry if the first reply looks broken.
+    for attempt in range(2):
+        used: list[str] = []
+        reply = generate_reply_with_tools(db, user_id, history, user_turn, used)
+        if tools_used is not None:
+            tools_used.extend(used)
+        if not looks_broken(reply):
+            return reply, True
+        print(f"Blocked a broken reply (attempt {attempt + 1}): {reply[:120]!r}")
+    return SAFE_FALLBACK, False
