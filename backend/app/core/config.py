@@ -9,6 +9,12 @@ class Settings(BaseSettings):
     access_token_expire_minutes: int = 1440
     llm_model: str = "openai/gpt-oss-120b"
     chroma_path: str = "./chroma_db"
+    cors_origins: str = "http://localhost:5173"
+    environment: str = "development"
+
+    # Optional: if both are set, an admin account is created on startup when missing
+    admin_username: str = ""
+    admin_password: str = ""
 
     model_config = SettingsConfigDict(env_file=".env")
 
