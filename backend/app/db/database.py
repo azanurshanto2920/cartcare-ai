@@ -5,8 +5,10 @@ from app.core.config import settings
 
 database_url = settings.database_url
 if database_url.startswith("postgres://"):
-    # SQLAlchemy expects the "postgresql://" scheme
-    database_url = database_url.replace("postgres://", "postgresql://", 1)
+    database_url = "postgresql://" + database_url[len("postgres://"):]
+if database_url.startswith("postgresql://"):
+    # Use the psycopg2 driver explicitly (psycopg2-binary is in requirements.txt)
+    database_url = "postgresql+psycopg2://" + database_url[len("postgresql://"):]
 
 connect_args = {"check_same_thread": False} if database_url.startswith("sqlite") else {}
 
