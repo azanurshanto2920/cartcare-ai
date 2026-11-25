@@ -6,10 +6,22 @@ and hands the conversation to a human agent when it cannot help. A separate
 admin area lets the support team manage tickets, documents, invoices and
 analytics.
 
-**Live demo:** _coming soon_  
-**Demo video:** _coming soon_
+**Live demo:** https://cartcare-ai-ivory.vercel.app  
+**API docs:** https://cartcare-ai-api.onrender.com/docs
 
 > The demo store runs on sample data. Nothing here is connected to a real shop.
+
+### Trying the live demo
+
+- The backend runs on a free hosting plan and goes to sleep when idle. **The
+  first request can take about a minute**; after that it responds normally.
+- Create an account on the sign-in page and start chatting. Try:
+  - `Which air conditioners do you have under $800?`
+  - `What is your return policy?`
+  - `Where is my order number 2? My email is daniel.carter@example.com`
+  - `I want to speak to a human agent.`
+- The admin pages (tickets, knowledge base, invoices, analytics) need an admin
+  account, which is not public. Ask me for access if you would like to see them.
 
 ## What it does
 
@@ -59,6 +71,7 @@ lookups, ticket creation and invoice checks are done in code, not by the model.
 - **LLM:** Groq API (model set in `backend/app/core/config.py`)
 - **Frontend:** React (Vite), React Router, plain CSS
 - **Auth:** JWT with an admin role
+- **Hosting:** backend in Docker on Render, PostgreSQL on Neon, frontend on Vercel
 
 ## Project layout
 
@@ -70,7 +83,10 @@ backend/
     db/          database setup and models
     schemas/     request and response shapes
     services/    agent, retrieval, orders, shop, tickets, invoices, analytics
+    bootstrap.py first-start setup (admin, demo store, policies)
+  data/          policy document loaded on first start
   scripts/       seed data, admin setup, sample invoices, evals
+  Dockerfile
 frontend/
   src/           pages (login, chat, tickets, knowledge base, invoices, analytics)
 docs/
@@ -122,7 +138,7 @@ Open `http://localhost:5173` (use `localhost`, not `127.0.0.1`).
 
 ### 3. Create an admin and add the policies
 
-1. Register an account on the login page.
+1. Register an account on the sign-in page.
 2. Make it an admin (run from `backend`, with the virtual environment active):
 
    ```powershell
@@ -134,6 +150,30 @@ Open `http://localhost:5173` (use `localhost`, not `127.0.0.1`).
 Demo orders belong to the sample customers in `backend/scripts/seed.py`. To try
 an order lookup, use order number `2` with the email `daniel.carter@example.com`.
 
+## Deployment
+
+The live demo uses three free services.
+
+**Backend (Render, Docker).** Create a web service from this repository with
+the root directory set to `backend`. Environment variables:
+
+| Variable | Meaning |
+|---|---|
+| `ENVIRONMENT` | `production`. The server refuses to start without a real `JWT_SECRET` |
+| `DATABASE_URL` | PostgreSQL connection string (Neon) |
+| `JWT_SECRET` | A long random string |
+| `GROQ_API_KEY` | Your Groq key |
+| `CORS_ORIGINS` | The frontend address, for example `https://your-app.vercel.app` |
+| `ADMIN_USERNAME`, `ADMIN_PASSWORD` | Optional. Creates an admin on first start if it does not exist |
+
+On every start, `app/bootstrap.py` creates the admin (if configured), loads the
+demo store when the database is empty, and loads the sample policy document when
+the knowledge base is empty. This matters on free hosting, where the document
+index is not persistent and is rebuilt after a restart.
+
+**Frontend (Vercel).** Import the repository with the root directory set to
+`frontend`, and set `VITE_API_URL` to the backend address.
+
 ## Scripts
 
 Run these from the `backend` folder with the virtual environment active.
@@ -143,6 +183,7 @@ Run these from the `backend` folder with the virtual environment active.
 | `python -m scripts.seed` | Creates the sample store (skips if products already exist) |
 | `python -m scripts.reset_demo_data` | Clears shop data, tickets and chat history, then reseeds. User accounts are kept |
 | `python -m scripts.make_admin <username>` | Makes a user an admin |
+| `python -m scripts.delete_user <username>` | Deletes a user with their messages, tickets and logs |
 | `python -m scripts.make_sample_invoices` | Generates sample invoice PDFs and the expected results |
 | `python -m scripts.test_invoices` | Checks invoice extraction against the expected results |
 | `python -m scripts.run_evals` | Runs a set of sample questions against the assistant and checks the replies |
@@ -152,6 +193,9 @@ The evals call the live model, so results can vary slightly between runs.
 ## Known limitations
 
 - Runs on sample data. It is not connected to a real shop platform.
+- Free hosting: the backend sleeps when idle, so the first request is slow.
+- Registration is open and there is no rate limiting, so the public demo uses
+  my model quota. It is not hardened for real traffic.
 - Invoice reading works on text-based PDFs, not scanned images.
 - Document retrieval is simple and tuned for a small knowledge base.
 - One store only. There is no multi-tenant separation.
@@ -161,6 +205,6 @@ The evals call the live model, so results can vary slightly between runs.
 
 ## What I would do next
 
-- Deployment with a hosted database and persistent document storage
 - A chat widget that can be embedded on any website
+- Rate limiting and a stricter sign-up flow
 - A larger set of evals, run automatically
